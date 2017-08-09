@@ -1,5 +1,5 @@
 class RestaurantsController < ApplicationController
-  before_action :set_restaurant, only: [:show, :edit, :update, :destroy]
+  before_action :set_restaurant, only: [:show, :edit, :update, :destroy, :chef]
 
   # GET /restaurants
   # GET /restaurants.json
@@ -26,9 +26,13 @@ class RestaurantsController < ApplicationController
   def create
     @restaurant = Restaurant.new(restaurant_params)
 
-    @restaurant.save
-
-    redirect_to @restaurant, notice: 'Restaurant was successfully created.'
+    if @restaurant.save
+      # new request to the server
+      redirect_to restaurants_path, notice: 'Restaurant was successfully created.'
+    else
+      # render is going to present the file that is specified
+      render :new
+    end
   end
 
   # PATCH/PUT /restaurants/1
@@ -55,6 +59,15 @@ class RestaurantsController < ApplicationController
     end
   end
 
+  def top
+    @restaurants = Restaurant.where(stars: 3)
+  end
+
+  def chef
+      # @restaurant = Restaurant.find(params[:id])
+
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_restaurant
@@ -63,6 +76,6 @@ class RestaurantsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def restaurant_params
-      params.require(:restaurant).permit(:name, :address, :description, :stars)
+      params.require(:restaurant).permit(:name, :address, :description, :stars, :chef)
     end
 end
